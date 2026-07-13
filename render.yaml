@@ -1,0 +1,34 @@
+# Render Blueprint para LlevameQ Backend
+# Deploy automático con PostgreSQL
+
+services:
+  # Backend API
+  - type: web
+    name: llevameq-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: llevameq-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+
+databases:
+  # PostgreSQL Database
+  - name: llevameq-db
+    databaseName: llevameq
+    user: llevameq_user
+    plan: free
+    region: oregon
